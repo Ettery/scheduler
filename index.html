@@ -1,0 +1,100 @@
+<!doctype html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Thula Scheduler</title>
+</head>
+
+<script src="./scripts/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
+<script src="./scripts//jquery.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="./css/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+<style type="text/css" media="screen">
+	html, body{
+		margin:0px;
+		padding:0px;
+		height:100%;
+		overflow:hidden;
+	}	
+</style>
+
+<script type="text/javascript" charset="utf-8">
+	function init() {
+        init2();
+        getData();
+	}
+
+	function init2(){        
+        scheduler.config.xml_date = "%Y-%m-%d%T%H:%i:%s";
+//        scheduler.config.xml_date = "%Y-%m-%dT%H:%i:%s.000Z";
+  //      scheduler.config.xml_date = "%Y-%m-%dT%H:%i:%s.000Z";
+        // "2016-08-30T06:30:00.000Z"
+        scheduler.config.show_loading = true;
+		scheduler.init('scheduler_here_2',new Date(2016,10,10),"month");
+
+        var d = [{"length":30,"location":"*Thula Baby Centre","service":"Consultation","serviceId":"13343","notes":"Hi Harriet, \r\n\r\nMy partner and I would like to sign up for the Thula Antenatal Classes in Moullie Point starting 30th August - 4th October 2016.\r\n\r\nThis is our first baby and you came highly recommended.  Please confirm we have a space for these classes over this time.  My due date is October 25th.\r\n\r\nI look forward to your reply.\r\nMany thanks,\r\nKristyl\r\n\r\n","clientId":"17058","client":"Kristyl Best","lengthUnit":"minutes","appointmentId":17060,"consultantId":"15833","consultant":"Pippa","text":"Kristyl Best - Consultation \r\nHi Harriet, \r\n\r\nMy partner and I would like to sign up for the Thula Antenatal Classes in Moullie Point starting 30th August - 4th October 2016.\r\n\r\nThis is our first baby and you came highly recommended.  Please confirm we have a space for these classes over this time.  My due date is October 25th.\r\n\r\nI look forward to your reply.\r\nMany thanks,\r\nKristyl\r\n\r\n","end_date":"2016-08-30T06:30","start_date":"2016-08-30T06:00"},{"length":30,"location":"*Thula Baby Centre","service":"Consultation","serviceId":"13343","notes":"","clientId":"18778","client":"Elly Stavros","lengthUnit":"minutes","appointmentId":18886,"consultantId":"15833","consultant":"Pippa","text":"Elly Stavros - Consultation \r\n","end_date":"2016-08-30T06:30:00.000Z","start_date":"2016-08-30T06:00:00.000Z"}];
+
+        //scheduler.parse(d,"json");
+		//scheduler.load("./data/events.xml");
+		
+	}
+
+
+    function getData(){
+        $.getJSON( "https://localhost:8443/api/v1/appointments", function( data ) {
+            var items = [];
+            $.each( data, function( key, val ) {
+                items.push( "<li id='" + key + "'>" + val.appointmentId + "</li>" );
+            });
+            
+            $( "<ul/>", {
+                "class": "my-new-list",
+                html: items.join( "" )
+            }).appendTo( "body" );
+
+            scheduler.parse(data,"json");
+            
+        });
+    }
+
+
+</script>
+
+<script type="text/javascript" charset="utf-8">
+    $(function(){
+        $(".myscheduler").dhx_scheduler({
+            xml_date:"%Y-%m-%d %H:%i",
+            date:new Date(2015,0,10),
+            mode:"week"
+        });
+        
+        scheduler.load("./data/events.xml");
+    });
+</script>
+
+
+<body onload="init();">
+
+    <div class="myscheduler" style='width:20%; height:20%;'></div>
+
+    <div class="test" style='width:20%; height:20%;'></div>
+
+
+	<div id="scheduler_here_2" class="dhx_cal_container" style='width:80%; height:45%;'>
+		<div class="dhx_cal_navline">
+			<div class="dhx_cal_prev_button">&nbsp;</div>
+			<div class="dhx_cal_next_button">&nbsp;</div>
+			<div class="dhx_cal_today_button"></div>
+			<div class="dhx_cal_date"></div>
+			<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+			<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+			<div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+		</div>
+		<div class="dhx_cal_header">
+		</div>
+		<div class="dhx_cal_data">
+		</div>
+	</div>
+</body>
+
+
+
