@@ -66,6 +66,7 @@
 
 <script type="text/javascript" charset="utf-8">
     var jsonAppointments;
+    var staff;
 	function init() {
         addStaffStyles();
         initScheduler();
@@ -74,17 +75,14 @@
 
     function addStaffStyles(){
 
-        var staff = [
-            {"staffId":"13337","staffName":"Heather","staffFullName":"Heather Wood","staffColor":"#25CC7E"},
-            {"staffId":"13342","staffName":"Tasha","staffFullName":"Tasha","staffColor":"#FFAE0D"},
-            {"staffId":"15833","staffName":"Pippa","staffFullName":"Pippa","staffColor":"#2D63A8"},
-            {"staffId":"16287","staffName":"Kath","staffFullName":"Kath","staffColor":"#4147F0"},
-            ];
-
+        $.getJSON( "https://localhost:8443/api/v1/consultants", function( data ) {
+            staff = data;
             $.each(staff, function( key, val ) {
-                var style = "<style type='text/css'> .dhx_cal_event.event_"+ val.staffName +" div, .dhx_cal_event_line.event_"+ val.staffName +"{background-color: "+ val.staffColor +" !important;}</style>";
+                var style = "<style type='text/css'> .dhx_cal_event.event_"+ val.consultant +" div, .dhx_cal_event_line.event_"+ val.consultant +"{background-color: "+ val.color +" !important;}</style>";
                 $(style).appendTo("head");
             });
+        });
+
     }
 
 	function initScheduler(){        
