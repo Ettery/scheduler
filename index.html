@@ -5,54 +5,152 @@
 </head>
 
 <script src="./scripts/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
+<script src="./scripts/dhtmlxscheduler_year_view.js" type="text/javascript" charset="utf-8"></script>
 <script src="./scripts//jquery.js" type="text/javascript" charset="utf-8"></script>
-<link rel="stylesheet" href="./css/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">
+<link rel="stylesheet" href="./scripts/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
 <style type="text/css" media="screen">
-	html, body{
-		margin:0px;
-		padding:0px;
-		height:100%;
-		overflow:hidden;
-	}	
+    html, body{
+        margin:0;
+        padding:0;
+        height:100%;
+        overflow:hidden;
+    }
+
+    .dhx_cal_event div.dhx_footer,
+    .dhx_cal_event.past_event div.dhx_footer,
+    .dhx_cal_event.event_english div.dhx_footer,
+    .dhx_cal_event.event_math div.dhx_footer,
+    .dhx_cal_event.event_science div.dhx_footer{
+        background-color: transparent !important;
+    }
+    .dhx_cal_event .dhx_body{
+        -webkit-transition: opacity 0.1s;
+        transition: opacity 0.1s;
+        opacity: 0.7;
+    }
+    .dhx_cal_event .dhx_title{
+        line-height: 12px;
+    }
+    .dhx_cal_event_line:hover,
+    .dhx_cal_event:hover .dhx_body,
+    .dhx_cal_event.selected .dhx_body,
+    .dhx_cal_event.dhx_cal_select_menu .dhx_body{
+        opacity: 1;
+    }
+
+    /*.dhx_cal_event.event_Heather div, .dhx_cal_event_line.event_Heather{
+        background-color: orange !important;
+        border-color: #a36800 !important;
+    }
+    .dhx_cal_event_clear.event_Heather{
+        color:orange !important;
+    }
+
+    .dhx_cal_event.event_Pippa div, .dhx_cal_event_line.event_Pippa{
+        background-color: #36BD14 !important;
+        border-color: #698490 !important;
+    }
+    .dhx_cal_event_clear.event_Pippa{
+        color:#36BD14 !important;
+    }
+
+    .dhx_cal_event.event_Tasha div, .dhx_cal_event_line.event_Tasha{
+        background-color: #FC5BD5 !important;
+        border-color: #839595 !important;
+    }
+    .dhx_cal_event_clear.event_Tasha{
+        color:#B82594 !important;
+    }*/
 </style>
 
 <script type="text/javascript" charset="utf-8">
+    var jsonAppointments;
 	function init() {
-        init2();
+        addStaffStyles();
+        initScheduler();
         getData();
 	}
 
-	function init2(){        
+    function addStaffStyles(){
+
+        var staff = [
+            {"staffId":"13337","staffName":"Heather","staffFullName":"Heather Wood","staffColor":"#25CC7E"},
+            {"staffId":"13342","staffName":"Tasha","staffFullName":"Tasha","staffColor":"#FFAE0D"},
+            {"staffId":"15833","staffName":"Pippa","staffFullName":"Pippa","staffColor":"#2D63A8"},
+            {"staffId":"16287","staffName":"Kath","staffFullName":"Kath","staffColor":"#4147F0"},
+            ];
+
+            $.each(staff, function( key, val ) {
+                var style = "<style type='text/css'> .dhx_cal_event.event_"+ val.staffName +" div, .dhx_cal_event_line.event_"+ val.staffName +"{background-color: "+ val.staffColor +" !important;}</style>";
+                $(style).appendTo("head");
+            });
+    }
+
+	function initScheduler(){        
         scheduler.config.xml_date = "%Y-%m-%d%T%H:%i:%s";
-//        scheduler.config.xml_date = "%Y-%m-%dT%H:%i:%s.000Z";
-  //      scheduler.config.xml_date = "%Y-%m-%dT%H:%i:%s.000Z";
-        // "2016-08-30T06:30:00.000Z"
+        scheduler.config.first_hour = 8;
+        scheduler.config.last_hour = 21;
+        scheduler.config.limit_time_select = true;
+        scheduler.config.start_on_monday = true;
         scheduler.config.show_loading = true;
+
+        scheduler.config.readonly = false;   // Entire scheduler
+        scheduler.config.readonly_form = true;  // Dialog
+
+        scheduler.config.details_on_dblclick = true;
+//        scheduler.config.details_on_create = true;
+
+        // scheduler.config.lightbox.sections=[
+        //     {name:"description", height:43, map_to:"text", type:"textarea" , focus:true},
+        //     {name:"subject", height:20, type:"select", options: subject, map_to:"subject" },
+        //     {name:"time", height:72, type:"time", map_to:"auto" }
+        // ];
+
 		scheduler.init('scheduler_here_2',new Date(2016,10,10),"month");
 
-        var d = [{"length":30,"location":"*Thula Baby Centre","service":"Consultation","serviceId":"13343","notes":"Hi Harriet, \r\n\r\nMy partner and I would like to sign up for the Thula Antenatal Classes in Moullie Point starting 30th August - 4th October 2016.\r\n\r\nThis is our first baby and you came highly recommended.  Please confirm we have a space for these classes over this time.  My due date is October 25th.\r\n\r\nI look forward to your reply.\r\nMany thanks,\r\nKristyl\r\n\r\n","clientId":"17058","client":"Kristyl Best","lengthUnit":"minutes","appointmentId":17060,"consultantId":"15833","consultant":"Pippa","text":"Kristyl Best - Consultation \r\nHi Harriet, \r\n\r\nMy partner and I would like to sign up for the Thula Antenatal Classes in Moullie Point starting 30th August - 4th October 2016.\r\n\r\nThis is our first baby and you came highly recommended.  Please confirm we have a space for these classes over this time.  My due date is October 25th.\r\n\r\nI look forward to your reply.\r\nMany thanks,\r\nKristyl\r\n\r\n","end_date":"2016-08-30T06:30","start_date":"2016-08-30T06:00"},{"length":30,"location":"*Thula Baby Centre","service":"Consultation","serviceId":"13343","notes":"","clientId":"18778","client":"Elly Stavros","lengthUnit":"minutes","appointmentId":18886,"consultantId":"15833","consultant":"Pippa","text":"Elly Stavros - Consultation \r\n","end_date":"2016-08-30T06:30:00.000Z","start_date":"2016-08-30T06:00:00.000Z"}];
+        scheduler.templates.event_class=function(start, end, event){
+				var css = "";
 
-        //scheduler.parse(d,"json");
-		//scheduler.load("./data/events.xml");
-		
-	}
+				if(event.consultant) // if event has subject property then special class should be assigned
+					css += "event_"+event.consultant;
+
+				if(event.id == scheduler.getState().select_id){
+					css += " selected";
+				}
+				return css; // default return
+
+				/*
+					Note that it is possible to create more complex checks
+					events with the same properties could have different CSS classes depending on the current view:
+
+					var mode = scheduler.getState().mode;
+					if(mode == "day"){
+						// custom logic here
+					}
+					else {
+						// custom logic here
+					}
+				*/
+			};
+
+    }
 
 
     function getData(){
         $.getJSON( "https://localhost:8443/api/v1/appointments", function( data ) {
-            var items = [];
-            $.each( data, function( key, val ) {
-                items.push( "<li id='" + key + "'>" + val.appointmentId + "</li>" );
-            });
+            // var items = [];
+            // $.each( data, function( key, val ) {
+            //     items.push( "<li id='" + key + "'>" + val.appointmentId + "</li>" );
+            // });
             
-            $( "<ul/>", {
-                "class": "my-new-list",
-                html: items.join( "" )
-            }).appendTo( "body" );
+            // $( "<ul/>", {
+            //     "class": "my-new-list",
+            //     html: items.join( "" )
+            // }).appendTo( "body" );
 
-            scheduler.parse(data,"json");
-            
+            jsonAppointments = data;
+            scheduler.parse(jsonAppointments,"json");
         });
     }
 
@@ -73,11 +171,7 @@
 
 
 <body onload="init();">
-
-    <div class="myscheduler" style='width:20%; height:20%;'></div>
-
-    <div class="test" style='width:20%; height:20%;'></div>
-
+    <div class="test" style='width:100%; height:10%;'></div>
 
 	<div id="scheduler_here_2" class="dhx_cal_container" style='width:80%; height:45%;'>
 		<div class="dhx_cal_navline">
@@ -85,9 +179,10 @@
 			<div class="dhx_cal_next_button">&nbsp;</div>
 			<div class="dhx_cal_today_button"></div>
 			<div class="dhx_cal_date"></div>
-			<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
-			<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+            <div class="dhx_cal_tab" name="year_tab" style="right:12px;"></div>
 			<div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+			<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+			<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
 		</div>
 		<div class="dhx_cal_header">
 		</div>
