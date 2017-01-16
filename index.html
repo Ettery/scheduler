@@ -1,44 +1,51 @@
 <!doctype html>
+
 <head>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<title>Thula Scheduler</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Thula Scheduler</title>
 </head>
 
-<script src="./scripts/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
 <script src="./scripts/dhtmlxscheduler_year_view.js" type="text/javascript" charset="utf-8"></script>
+<script src="./scripts/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
+<script src="./scripts/ext/dhtmlxscheduler_editors.js" type="text/javascript" charset="utf-8"></script>
+<script src="./scripts/ext/dhtmlxscheduler_minical.js" type="text/javascript" charset="utf-8"></script>
 <script src="./scripts//jquery.js" type="text/javascript" charset="utf-8"></script>
-<link rel="stylesheet" href="./scripts/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">
+<!--<link rel="stylesheet" href="./scripts/dhtmlxscheduler.css" type="text/css" media="screen" title="no title" charset="utf-8">-->
+<link rel="stylesheet" href="./scripts/dhtmlxscheduler_flat.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
 <style type="text/css" media="screen">
-    html, body{
-        margin:0;
-        padding:0;
-        height:100%;
-        overflow:hidden;
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
     }
-
+    
     .dhx_cal_event div.dhx_footer,
     .dhx_cal_event.past_event div.dhx_footer,
     .dhx_cal_event.event_english div.dhx_footer,
     .dhx_cal_event.event_math div.dhx_footer,
-    .dhx_cal_event.event_science div.dhx_footer{
+    .dhx_cal_event.event_science div.dhx_footer {
         background-color: transparent !important;
     }
-    .dhx_cal_event .dhx_body{
+    
+    .dhx_cal_event .dhx_body {
         -webkit-transition: opacity 0.1s;
         transition: opacity 0.1s;
         opacity: 0.7;
     }
-    .dhx_cal_event .dhx_title{
+    
+    .dhx_cal_event .dhx_title {
         line-height: 12px;
     }
+    
     .dhx_cal_event_line:hover,
     .dhx_cal_event:hover .dhx_body,
     .dhx_cal_event.selected .dhx_body,
-    .dhx_cal_event.dhx_cal_select_menu .dhx_body{
+    .dhx_cal_event.dhx_cal_select_menu .dhx_body {
         opacity: 1;
     }
-
     /*.dhx_cal_event.event_Heather div, .dhx_cal_event_line.event_Heather{
         background-color: orange !important;
         border-color: #a36800 !important;
@@ -67,25 +74,30 @@
 <script type="text/javascript" charset="utf-8">
     var jsonAppointments;
     var staff;
-	function init() {
+
+    function init() {
         addStaffStyles();
         initScheduler();
         getData();
-	}
 
-    function addStaffStyles(){
 
-        $.getJSON( "https://localhost:8443/api/v1/consultants", function( data ) {
+        // var myDate = new Date();
+        // document.write(myDate.getTimezoneOffset());
+    }
+
+    function addStaffStyles() {
+
+        $.getJSON("https://localhost:8443/api/v1/consultants", function(data) {
             staff = data;
-            $.each(staff, function( key, val ) {
-                var style = "<style type='text/css'> .dhx_cal_event.event_"+ val.consultant +" div, .dhx_cal_event_line.event_"+ val.consultant +"{background-color: "+ val.color +" !important;}</style>";
+            $.each(staff, function(key, val) {
+                var style = "<style type='text/css'> .dhx_cal_event.event_" + val.consultant + " div, .dhx_cal_event_line.event_" + val.consultant + "{background-color: " + val.color + " !important;}</style>";
                 $(style).appendTo("head");
             });
         });
 
     }
 
-	function initScheduler(){        
+    function initScheduler() {
         scheduler.config.xml_date = "%Y-%m-%d%T%H:%i:%s";
         scheduler.config.first_hour = 8;
         scheduler.config.last_hour = 21;
@@ -93,101 +105,186 @@
         scheduler.config.start_on_monday = true;
         scheduler.config.show_loading = true;
 
-        scheduler.config.readonly = false;   // Entire scheduler
-        scheduler.config.readonly_form = true;  // Dialog
+        scheduler.config.readonly = false; // Entire scheduler
+        scheduler.config.readonly_form = true; // Dialog
 
         scheduler.config.details_on_dblclick = true;
-//        scheduler.config.details_on_create = true;
 
-        // scheduler.config.lightbox.sections=[
-        //     {name:"description", height:43, map_to:"text", type:"textarea" , focus:true},
-        //     {name:"subject", height:20, type:"select", options: subject, map_to:"subject" },
-        //     {name:"time", height:72, type:"time", map_to:"auto" }
-        // ];
 
-		scheduler.init('scheduler_here_2',new Date(2016,10,10),"month");
+        /*
+        // Std event format    
+        <div event_id="1484590228598" class="dhx_cal_event event_Tasha selected" style="position:absolute; top:154px; left:1px; width:728px; height:121px;">
+            <div class="dhx_event_move dhx_header" style=" width:726px;">&nbsp;</div>
+            <div class="dhx_event_move dhx_title" style="">11:30 - 14:15</div>
+            <div class="dhx_body" style=" width:718px; height:92px;">Jami Darkoh - Consultation</div>
+            <div class="dhx_event_resize dhx_footer" style=" width:724px;"></div>
+        </div>
 
-        scheduler.templates.event_class=function(start, end, event){
-				var css = "";
+        // Custom event format
+        <div event_id="1484590575467" class="dhx_cal_event event_Tasha" style="position:absolute; top:154px; left:1px; width:728px; height:40px;">
+            <div class="dhx_event_move my_event_move" style="width: 728px"></div>
+                <div class="my_event_body">
+                    <span class="event_date">11:30</span><span>Jami Darkoh - Consultation</span>
+                </div>
+            <div class="dhx_event_resize my_event_resize" style="width: 728px"></div>
+        </div>
 
-				if(event.consultant) // if event has subject property then special class should be assigned
-					css += "event_"+event.consultant;
+        */
 
-				if(event.id == scheduler.getState().select_id){
-					css += " selected";
-				}
-				return css; // default return
+        // renderEvent allows customisation of the event display
+        scheduler.renderEvent = function(container, ev) {
+            var container_width = container.style.width; // e.g. "105px"
 
-				/*
-					Note that it is possible to create more complex checks
-					events with the same properties could have different CSS classes depending on the current view:
+            // move section
+            var html = "<div class='dhx_event_move my_event_move' style='width: " + container_width + "'></div>";
 
-					var mode = scheduler.getState().mode;
-					if(mode == "day"){
-						// custom logic here
-					}
-					else {
-						// custom logic here
-					}
-				*/
-			};
+            // container for event's content
+            html += "<div class='my_event_body'>";
+            html += "<span class='event_date'>";
+
+            //two options here:show only start date for short events or start+end for long
+            if ((ev.end_date - ev.start_date) / 60000 > 40) { //if event is longer than 40 minutes
+                html += scheduler.templates.event_header(ev.start_date, ev.end_date, ev);
+                html += "</span><br/>";
+            } else {
+                html += scheduler.templates.event_date(ev.start_date) + "</span>";
+            }
+            // displaying event's text
+            html += "<span>" + scheduler.templates.event_text(ev.start_date, ev.end_date, ev) + "</span>" + "</div>";
+
+            // resize section
+            html += "<div class='dhx_event_resize my_event_resize' style='width: " + container_width + ";height: 10px'></div>";
+
+            container.innerHTML = html;
+            return true; //required, true - display a custom form, false - the default form
+        };
+
+        //        scheduler.config.details_on_create = true;
+
+        // Customise the lightbox fields
+        //scheduler.locale.labels.section_type = "Type";
+        scheduler.config.lightbox.sections = [{
+            name: "Notes",
+            height: 50,
+            type: "textarea",
+            map_to: "notes",
+            focus: true
+        }, {
+            name: "Location",
+            height: 25,
+            type: "textarea",
+            map_to: "location"
+        }, {
+            name: "Service",
+            height: 25,
+            type: "textarea",
+            map_to: "service"
+        }, {
+            name: "Consultant",
+            height: 25,
+            type: "textarea",
+            map_to: "consultant"
+        }, {
+            name: "Time",
+            height: 72,
+            type: "time",
+            map_to: "auto"
+        }];
+
+        scheduler.init('scheduler_here_2', new Date(2017, 0, 16), "day");
+
+        // Add the consultant class to the event to apply color
+        scheduler.templates.event_class = function(start, end, event) {
+            var css = "";
+
+            if (event.consultant) // if event has subject property then special class should be assigned
+                css += "event_" + event.consultant;
+
+            if (event.id == scheduler.getState().select_id) {
+                css += " selected";
+            }
+            return css; // default return
+
+            /*
+            	Note that it is possible to create more complex checks
+            	events with the same properties could have different CSS classes depending on the current view:
+
+            	var mode = scheduler.getState().mode;
+            	if(mode == "day"){
+            		// custom logic here
+            	}
+            	else {
+            		// custom logic here
+            	}
+            */
+        };
 
     }
 
 
-    function getData(){
-        $.getJSON( "https://localhost:8443/api/v1/appointments", function( data ) {
+    function getData() {
+        $.getJSON("https://localhost:8443/api/v1/appointments?future=true", function(data) {
             // var items = [];
             // $.each( data, function( key, val ) {
             //     items.push( "<li id='" + key + "'>" + val.appointmentId + "</li>" );
             // });
-            
+
             // $( "<ul/>", {
             //     "class": "my-new-list",
             //     html: items.join( "" )
             // }).appendTo( "body" );
 
             jsonAppointments = data;
-            scheduler.parse(jsonAppointments,"json");
+            scheduler.parse(jsonAppointments, "json");
         });
     }
-
-
 </script>
 
-<script type="text/javascript" charset="utf-8">
-    $(function(){
+<!--<script type="text/javascript" charset="utf-8">
+    $(function() {
         $(".myscheduler").dhx_scheduler({
-            xml_date:"%Y-%m-%d %H:%i",
-            date:new Date(2015,0,10),
-            mode:"week"
+            xml_date: "%Y-%m-%d %H:%i",
+            date: new Date(2017, 0, 10),
+            mode: "week"
         });
-        
+
         scheduler.load("./data/events.xml");
     });
-</script>
+</script>-->
 
 
 <body onload="init();">
-    <div class="test" style='width:100%; height:10%;'></div>
+    <div class="test" style="width:100%; height:5%;"></div>
 
-	<div id="scheduler_here_2" class="dhx_cal_container" style='width:80%; height:45%;'>
-		<div class="dhx_cal_navline">
-			<div class="dhx_cal_prev_button">&nbsp;</div>
-			<div class="dhx_cal_next_button">&nbsp;</div>
-			<div class="dhx_cal_today_button"></div>
-			<div class="dhx_cal_date"></div>
+    <div id="scheduler_here_2" class="dhx_cal_container" style="width:80%; height:70%;">
+        <div class="dhx_cal_navline">
+            <div class="dhx_cal_prev_button">&nbsp;</div>
+            <div class="dhx_cal_next_button">&nbsp;</div>
+            <div class="dhx_cal_today_button"></div>
+            <div class="dhx_cal_date"></div>
             <div class="dhx_cal_tab" name="year_tab" style="right:12px;"></div>
-			<div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
-			<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
-			<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
-		</div>
-		<div class="dhx_cal_header">
-		</div>
-		<div class="dhx_cal_data">
-		</div>
-	</div>
+            <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+            <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+            <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+        </div>
+        <div class="dhx_cal_header">
+        </div>
+        <div class="dhx_cal_data">
+        </div>
+    </div>
+    <div>
+        <h3>Todo list</h3>
+        <ul>
+            <li>Improve event formatting - deeper, border, etc?</li>
+            <li>Work out how to make read-only but still show lightbox</li>
+            <li>View of details for each consultant</li>
+        </ul>
+    </div>
+    <div>
+        <a href="https://localhost:8443/api/v1/appointments/html?future=true" target="_blank">Appointments HTML</a>
+        <br/>
+        <a href="https://localhost:8443/api/v1/appointments?future=true" target="_blank">Appointments JSON</a>
+        <br/>
+        <a href="https://localhost:8443/api/v1/consultants" target="_blank">Consultants JSON</a>
+    </div>
 </body>
-
-
-
